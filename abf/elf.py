@@ -13,29 +13,10 @@
 ##
 
 from abf.cpu        import *
+from abf.elfFlags   import *
 from abf.exception  import *
 from ctypes         import *
 from struct         import unpack
-
-
-
-
-class ELFFlags:
-    ELFCLASS32  = 0x01
-    ELFCLASS64  = 0x02
-    EI_CLASS    = 0x04
-    EI_DATA     = 0x05
-    ELFDATA2LSB = 0x01
-    ELFDATA2MSB = 0x02
-    EM_386      = 0x03
-    EM_X86_64   = 0x3e
-    EM_ARM      = 0x28
-    EM_MIPS     = 0x08
-    EM_SPARCv8p = 0x12
-    EM_PowerPC  = 0x14
-    EM_ARM64    = 0xb7
-
-
 
 
 
