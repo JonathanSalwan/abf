@@ -1,5 +1,5 @@
-Abstract Binary Format Manipulation
-===================================
+Abstract Binary Format 
+=======================
 
 Manage your **ELF**, **PE** or **Mach-O** format as an abstraction or more specifically.
 
