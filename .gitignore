@@ -1,0 +1,6 @@
+dist/*
+abf.egg-info/*
+build/*
+*.pyc
+*.swp
+clean.sh
