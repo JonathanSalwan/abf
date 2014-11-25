@@ -99,5 +99,5 @@ Or more specifically :
 Special thanks
 --------------
 
-- Wannes Rombouts (wapiflapi) for bug fix : https://github.com/JonathanSalwan/abf/commit/87a42d6529fa31f5875f697b4eba98380286d7bd
+- Wannes Rombouts (wapiflapi) for python3 compatible : https://github.com/JonathanSalwan/abf/commit/87a42d6529fa31f5875f697b4eba98380286d7bd
 
