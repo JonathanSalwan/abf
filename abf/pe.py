@@ -2,10 +2,10 @@
 ## -*- coding: utf-8 -*-
 ##
 ##  Jonathan Salwan - 2014-11-23
-## 
+##
 ##  http://shell-storm.org
 ##  http://twitter.com/JonathanSalwan
-## 
+##
 ##  This program is free software: you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
 ##  the Free Software  Foundation, either  version 3 of  the License, or
@@ -177,10 +177,10 @@ class PE:
 
     def __getPEOffset(self):
         self.__PEOffset = unpack('<I', str(self.__binary[60:64]))[0]
-        if self.__binary[self.__PEOffset:self.__PEOffset+4] != '50450000'.decode('hex'):
+        if self.__binary[self.__PEOffset:self.__PEOffset+4] != b'\x50\x45\x00\x00':
             raise AbfException('PE.__getPEOffset() - Bad PE signature')
 
- 
+
     def __parsePEHeader(self):
         PEheader = self.__binary[self.__PEOffset:]
         self.__IMAGE_FILE_HEADER = IMAGE_FILE_HEADER.from_buffer_copy(PEheader)
@@ -209,7 +209,7 @@ class PE:
             base = base[sizeof(IMAGE_SECTION_HEADER):]
             self.__sections_l += [sec]
 
-        return 0              
+        return 0
 
 
     def getEntryPoint(self):

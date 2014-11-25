@@ -2,10 +2,10 @@
 ## -*- coding: utf-8 -*-
 ##
 ##  Jonathan Salwan - 2014-11-23
-## 
+##
 ##  http://shell-storm.org
 ##  http://twitter.com/JonathanSalwan
-## 
+##
 ##  This program is free software: you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
 ##  the Free Software  Foundation, either  version 3 of  the License, or
@@ -80,35 +80,35 @@ class SEGMENT_COMMAND64(Structure):
 
 class SECTION(Structure):
     _fields_ = [
-                ('sectname',        c_ubyte * 16),  
-                ('segname',         c_ubyte * 16),  
-                ('addr',            c_uint),  
-                ('size',            c_uint),  
-                ('offset',          c_uint),  
-                ('align',           c_uint),  
-                ('reloff',          c_uint),  
-                ('nreloc',          c_uint),  
-                ('flags',           c_uint),  
-                ('reserved1',       c_uint),  
-                ('reserved2',       c_uint)  
+                ('sectname',        c_ubyte * 16),
+                ('segname',         c_ubyte * 16),
+                ('addr',            c_uint),
+                ('size',            c_uint),
+                ('offset',          c_uint),
+                ('align',           c_uint),
+                ('reloff',          c_uint),
+                ('nreloc',          c_uint),
+                ('flags',           c_uint),
+                ('reserved1',       c_uint),
+                ('reserved2',       c_uint)
                ]
 
 
 
-    
+
 class SECTION64(Structure):
     _fields_ = [
-                ('sectname',        c_ubyte * 16),  
-                ('segname',         c_ubyte * 16),  
-                ('addr',            c_ulonglong),  
-                ('size',            c_ulonglong),  
-                ('offset',          c_uint),  
-                ('align',           c_uint),  
-                ('reloff',          c_uint),  
-                ('nreloc',          c_uint),  
-                ('flags',           c_uint),  
-                ('reserved1',       c_uint),  
-                ('reserved2',       c_uint)  
+                ('sectname',        c_ubyte * 16),
+                ('segname',         c_ubyte * 16),
+                ('addr',            c_ulonglong),
+                ('size',            c_ulonglong),
+                ('offset',          c_uint),
+                ('align',           c_uint),
+                ('reloff',          c_uint),
+                ('nreloc',          c_uint),
+                ('flags',           c_uint),
+                ('reserved1',       c_uint),
+                ('reserved2',       c_uint)
                ]
 
 
@@ -216,7 +216,7 @@ class MACHO:
 
 
     def getArch(self):
-        if self.__machHeader.cputype == MACHOFlags.CPU_TYPE_I386 or self.__machHeader.cputype == MACHOFlags.CPU_TYPE_X86_64: 
+        if self.__machHeader.cputype == MACHOFlags.CPU_TYPE_I386 or self.__machHeader.cputype == MACHOFlags.CPU_TYPE_X86_64:
             return CpuArch.CPU_X86
         if self.__machHeader.cputype == MACHOFlags.CPU_TYPE_ARM:
             return CpuArch.CPU_ARM
@@ -225,9 +225,9 @@ class MACHO:
         else:
             return CpuArch.CPU_UNKNOWN
 
-            
+
     def getArchMode(self):
-        if self.__machHeader.magic == 0xfeedface: 
+        if self.__machHeader.magic == 0xfeedface:
             return CpuMode.MODE_32
         elif self.__machHeader.magic == 0xfeedfacf:
             return CpuMode.MODE_64
