@@ -15,7 +15,7 @@
 from abf.cpu        import *
 from abf.exception  import *
 from ctypes         import *
-from struct         import unpack
+from struct         import unpack_from
 
 
 
@@ -176,7 +176,7 @@ class PE:
 
 
     def __getPEOffset(self):
-        self.__PEOffset = unpack('<I', str(self.__binary[60:64]))[0]
+        self.__PEOffset = unpack_from('<I', self.__binary[60:64])[0]
         if self.__binary[self.__PEOffset:self.__PEOffset+4] != b'\x50\x45\x00\x00':
             raise AbfException('PE.__getPEOffset() - Bad PE signature')
 
@@ -189,10 +189,10 @@ class PE:
     def __parseOptHeader(self):
         PEoptHeader = self.__binary[self.__PEOffset+24:self.__PEOffset+24+self.__IMAGE_FILE_HEADER.SizeOfOptionalHeader]
 
-        if unpack('<H', str(PEoptHeader[0:2]))[0] == PEFlags.IMAGE_NT_OPTIONAL_HDR32_MAGIC:
+        if unpack_from('<H', PEoptHeader[0:2])[0] == PEFlags.IMAGE_NT_OPTIONAL_HDR32_MAGIC:
             self.__IMAGE_OPTIONAL_HEADER = IMAGE_OPTIONAL_HEADER.from_buffer_copy(PEoptHeader)
 
-        elif unpack('<H', str(PEoptHeader[0:2]))[0] == PEFlags.IMAGE_NT_OPTIONAL_HDR64_MAGIC:
+        elif unpack_from('<H', PEoptHeader[0:2])[0] == PEFlags.IMAGE_NT_OPTIONAL_HDR64_MAGIC:
             self.__IMAGE_OPTIONAL_HEADER = IMAGE_OPTIONAL_HEADER64.from_buffer_copy(PEoptHeader)
 
         else:
@@ -225,7 +225,7 @@ class PE:
                             'offset'  : section.PointerToRawData,
                             'size'    : section.SizeOfRawData,
                             'vaddr'   : section.VirtualAddress + self.__IMAGE_OPTIONAL_HEADER.ImageBase,
-                            'data' : str(self.__binary[section.PointerToRawData:section.PointerToRawData+section.SizeOfRawData])
+                            'data'    : self.__binary[section.PointerToRawData:section.PointerToRawData+section.SizeOfRawData]
                         }]
         return ret
 
@@ -239,7 +239,7 @@ class PE:
                             'offset'  : section.PointerToRawData,
                             'size'    : section.SizeOfRawData,
                             'vaddr'   : section.VirtualAddress + self.__IMAGE_OPTIONAL_HEADER.ImageBase,
-                            'opcodes'    : str(self.__binary[section.PointerToRawData:section.PointerToRawData+section.SizeOfRawData])
+                            'opcodes' : self.__binary[section.PointerToRawData:section.PointerToRawData+section.SizeOfRawData]
                         }]
         return ret
 
