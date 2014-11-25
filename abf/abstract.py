@@ -2,10 +2,10 @@
 ## -*- coding: utf-8 -*-
 ##
 ##  Jonathan Salwan - 2014-11-23
-## 
+##
 ##  http://shell-storm.org
 ##  http://twitter.com/JonathanSalwan
-## 
+##
 ##  This program is free software: you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
 ##  the Free Software  Foundation, either  version 3 of  the License, or
@@ -26,7 +26,7 @@ class Abstract(object):
         self.__fileName  = binary
         self.__rawBinary = None
         self.__binary    = None
-        
+
         try:
             fd = open(self.__fileName, 'rb')
             self.__rawBinary = fd.read()
@@ -34,17 +34,17 @@ class Abstract(object):
         except:
             raise AbfException('Can\'t open the binary or binary not found')
 
-        if self.__rawBinary[:4] == '7f454c46'.decode('hex'):
-             self.__binary = ELF(self.__rawBinary)
+        if self.__rawBinary[:4] == b'\x7f\x45\x4c\x46':
+            self.__binary = ELF(self.__rawBinary)
 
-        elif self.__rawBinary[:2] == '4d5a'.decode('hex'):
-             self.__binary = PE(self.__rawBinary)
+        elif self.__rawBinary[:2] == b'\x4d\x5a':
+            self.__binary = PE(self.__rawBinary)
 
-        #elif self.__rawBinary[:4] == 'cafebabe'.decode('hex'):
+        #elif self.__rawBinary[:4] == b'\xca\xfe\xba\xbe':
         #     self.__binary = UNIVERSAL(self.__rawBinary)
 
-        elif self.__rawBinary[:4] == 'cefaedfe'.decode('hex') or self.__rawBinary[:4] == 'cffaedfe'.decode('hex'):
-             self.__binary = MACHO(self.__rawBinary)
+        elif self.__rawBinary[:4] == b'\xce\xfa\xed\xfe' or self.__rawBinary[:4] == b'\xcf\xfa\xed\xfe':
+            self.__binary = MACHO(self.__rawBinary)
 
         else:
             raise AbfException('Binary format not supported')

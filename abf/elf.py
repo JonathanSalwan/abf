@@ -2,10 +2,10 @@
 ## -*- coding: utf-8 -*-
 ##
 ##  Jonathan Salwan - 2014-11-23
-## 
+##
 ##  http://shell-storm.org
 ##  http://twitter.com/JonathanSalwan
-## 
+##
 ##  This program is free software: you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
 ##  the Free Software  Foundation, either  version 3 of  the License, or
@@ -16,7 +16,7 @@ from abf.cpu        import *
 from abf.elfFlags   import *
 from abf.exception  import *
 from ctypes         import *
-from struct         import unpack
+from struct         import unpack_from
 
 
 
@@ -37,7 +37,7 @@ class Elf32_Ehdr_LSB(LittleEndianStructure):
                     ('e_shnum',         c_ushort),
                     ('e_shstrndx',      c_ushort)
                 ]
- 
+
 
 
 
@@ -146,7 +146,7 @@ class Elf32_Ehdr_MSB(BigEndianStructure):
 
 
 
- 
+
 class Elf64_Ehdr_MSB(BigEndianStructure):
     _fields_ =  [
                     ('e_ident',         c_ubyte * 16),
@@ -247,10 +247,10 @@ class ELF:
 
     ''' Parse ELF header '''
     def __setHeaderElf(self):
-        e_ident = str(self.__binary[:15])
+        e_ident = self.__binary[:15]
 
-        ei_class = unpack('<B', e_ident[ELFFlags.EI_CLASS])[0]
-        ei_data  = unpack('<B', e_ident[ELFFlags.EI_DATA])[0]
+        ei_class = unpack_from('<B', e_ident[ELFFlags.EI_CLASS:])[0]
+        ei_data  = unpack_from('<B', e_ident[ELFFlags.EI_DATA:])[0]
 
         if ei_class != ELFFlags.ELFCLASS32 and ei_class != ELFFlags.ELFCLASS64:
             raise AbfException('ELF.__setHeaderElf() - Bad Arch size')
@@ -258,10 +258,10 @@ class ELF:
         if ei_data != ELFFlags.ELFDATA2LSB and ei_data != ELFFlags.ELFDATA2MSB:
             raise AbfException('ELF.__setHeaderElf() - Bad architecture endian')
 
-        if ei_class == ELFFlags.ELFCLASS32: 
+        if ei_class == ELFFlags.ELFCLASS32:
             if   ei_data == ELFFlags.ELFDATA2LSB: self.__ElfHeader = Elf32_Ehdr_LSB.from_buffer_copy(self.__binary)
             elif ei_data == ELFFlags.ELFDATA2MSB: self.__ElfHeader = Elf32_Ehdr_MSB.from_buffer_copy(self.__binary)
-        elif ei_class == ELFFlags.ELFCLASS64: 
+        elif ei_class == ELFFlags.ELFCLASS64:
             if   ei_data == ELFFlags.ELFDATA2LSB: self.__ElfHeader = Elf64_Ehdr_LSB.from_buffer_copy(self.__binary)
             elif ei_data == ELFFlags.ELFDATA2MSB: self.__ElfHeader = Elf64_Ehdr_MSB.from_buffer_copy(self.__binary)
 
@@ -274,8 +274,8 @@ class ELF:
         base = self.__binary[self.__ElfHeader.e_shoff:]
         shdr_l = []
 
-        e_ident = str(self.__binary[:15])
-        ei_data = unpack('<B', e_ident[ELFFlags.EI_DATA])[0]
+        e_ident = self.__binary[:15]
+        ei_data = unpack_from('<B', e_ident[ELFFlags.EI_DATA:])[0]
 
         for i in range(shdr_num):
 
@@ -290,9 +290,9 @@ class ELF:
             base = base[self.__ElfHeader.e_shentsize:]
 
         # setup name from the strings table
-        string_table = str(self.__binary[(self.__shdr_l[self.__ElfHeader.e_shstrndx].sh_offset):])
+        string_table = self.__binary[(self.__shdr_l[self.__ElfHeader.e_shstrndx].sh_offset):]
         for i in range(shdr_num):
-            self.__shdr_l[i].str_name = string_table[self.__shdr_l[i].sh_name:].split('\0')[0]
+            self.__shdr_l[i].str_name = string_table[self.__shdr_l[i].sh_name:].split(b'\0')[0]
 
 
     ''' Parse Program header '''
@@ -301,8 +301,8 @@ class ELF:
         base = self.__binary[self.__ElfHeader.e_phoff:]
         phdr_l = []
 
-        e_ident = str(self.__binary[:15])
-        ei_data = unpack('<B', e_ident[ELFFlags.EI_DATA])[0]
+        e_ident = self.__binary[:15]
+        ei_data = unpack_from('<B', e_ident[ELFFlags.EI_DATA:])[0]
 
         for i in range(pdhr_num):
             if self.getArchMode() == CpuMode.MODE_32:
@@ -328,7 +328,7 @@ class ELF:
                             'offset'  : segment.p_offset,
                             'size'    : segment.p_memsz,
                             'vaddr'   : segment.p_vaddr,
-                            'opcodes' : str(self.__binary[segment.p_offset:segment.p_offset+segment.p_memsz])
+                            'opcodes' : self.__binary[segment.p_offset:segment.p_offset+segment.p_memsz]
                         }]
         return ret
 
@@ -342,13 +342,13 @@ class ELF:
                             'offset'  : section.sh_offset,
                             'size'    : section.sh_size,
                             'vaddr'   : section.sh_addr,
-                            'data'    : str(self.__binary[section.sh_offset:section.sh_offset+section.sh_size])
+                            'data'    : self.__binary[section.sh_offset:section.sh_offset+section.sh_size]
                         }]
         return ret
 
 
     def getArch(self):
-        if self.__ElfHeader.e_machine == ELFFlags.EM_386 or self.__ElfHeader.e_machine == ELFFlags.EM_X86_64: 
+        if self.__ElfHeader.e_machine == ELFFlags.EM_386 or self.__ElfHeader.e_machine == ELFFlags.EM_X86_64:
             return CpuArch.CPU_X86
         elif self.__ElfHeader.e_machine == ELFFlags.EM_ARM:
             return CpuArch.CPU_ARM
@@ -363,11 +363,11 @@ class ELF:
         else:
             return CpuArch.CPU_UNKNOWN
 
-            
+
     def getArchMode(self):
-        if self.__ElfHeader.e_ident[ELFFlags.EI_CLASS] == ELFFlags.ELFCLASS32: 
+        if self.__ElfHeader.e_ident[ELFFlags.EI_CLASS] == ELFFlags.ELFCLASS32:
             return CpuMode.MODE_32
-        elif self.__ElfHeader.e_ident[ELFFlags.EI_CLASS] == ELFFlags.ELFCLASS64: 
+        elif self.__ElfHeader.e_ident[ELFFlags.EI_CLASS] == ELFFlags.ELFCLASS64:
             return CpuMode.MODE_64
         else:
             return CpuMode.MODE_UNKNOWN
@@ -381,7 +381,7 @@ class ELF:
     def phdrs(self):
         return self.__phdr_l
 
-    
+
     @property
     def shdrs(self):
         return self.__shdr_l
