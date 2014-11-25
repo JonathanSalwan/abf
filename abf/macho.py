@@ -196,7 +196,7 @@ class MACHO:
                             'offset'  : section.offset,
                             'size'    : section.size,
                             'vaddr'   : section.addr,
-                            'opcodes' : str(self.__binary[section.offset:section.offset+section.size])
+                            'opcodes' : self.__binary[section.offset:section.offset+section.size]
                         }]
         return ret
 
@@ -210,7 +210,7 @@ class MACHO:
                             'offset'  : section.offset,
                             'size'    : section.size,
                             'vaddr'   : section.addr,
-                            'data'    : str(self.__binary[section.offset:section.offset+section.size])
+                            'data'    : self.__binary[section.offset:section.offset+section.size]
                         }]
         return ret
 
