@@ -14,13 +14,13 @@
 
 
 class CpuArch:
-    CPU_UNKNOWN     = -1
-    CPU_X86         = 0
-    CPU_ARM         = 1
-    CPU_ARM64       = 2
-    CPU_MIPS        = 3
-    CPU_PPC         = 4
-    CPU_SPARC       = 5
+    CPU_UNKNOWN = -1
+    CPU_ARM     = 0
+    CPU_ARM64   = 1
+    CPU_MIPS    = 2
+    CPU_X86     = 3
+    CPU_PPC     = 4
+    CPU_SPARC   = 5
 
 
 
